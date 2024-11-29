@@ -29,8 +29,10 @@ char	*tmpf(int fd, char *tmp)
 
 int	get_texture_rgb(char *tmp)
 {
+
 	if (tmp && !ft_strlen(tmp))
 		return (1);
+
 	if (!ft_strncmp(tmp, "NO ./", 5))
 		return (2);
 	if (!ft_strncmp(tmp, "SO ./", 5))
@@ -49,11 +51,11 @@ int	get_texture_rgb(char *tmp)
 }
 int	set_config(t_game *game, char *tmp, int type, int fd)
 {
-
-
+	if(type == 3 || type == 4 || type == 5 || type == 2)
+		if(!ft_strnstr(tmp, ".png", ft_strlen(tmp)))
+			return (0);
 	if (type == 1)
-		return (1);
-
+		return (type);
 	if (type == 2)
 		game->npath = ft_strdup(tmp + 3);
 	else if (type == 3)
@@ -72,14 +74,13 @@ int	set_config(t_game *game, char *tmp, int type, int fd)
 		if (!check_rgb(tmp) || !check_rgbrange(ft_strdup(tmp + 2), game->cell))
 			error_configuration(game, tmp, fd);
 	}
-
 	if (type == 8 && game->configs != 6)
 		return (0);
 	else if (type == 8 && game->configs == 6)
 		return (-1);
 	if (type > 1)
 		game->configs++;
-	return (1);
+	return (type);
 }
 char	*get_texture(int fd, t_game *game)
 {
@@ -100,28 +101,6 @@ char	*get_texture(int fd, t_game *game)
 	return (tmp);
 }
 
-// void	get_rgb(int fd, t_game *game)
-// {
-// 	char	*tmp;
-// 	char	*rgb;
-
-// 	tmp = NULL;
-// 	tmp = tmpf(fd, tmp);
-// 	if (tmp[0] != '\0')
-// 		error_configuration(game, tmp, fd);
-// 	tmp = tmpf(fd, tmp);
-// 	rgb = ft_strdup(tmp + 2);
-// 	if (ft_strncmp(tmp, "F ", 2) || !check_rgb(tmp) || !check_rgbrange(rgb,
-// 			game->floor))
-// 		error_configuration(game, tmp, fd);
-// 	tmp = tmpf(fd, tmp);
-// 	rgb = ft_strdup(tmp + 2);
-// 	if (ft_strncmp(tmp, "C ", 2) || !check_rgb(tmp) || !check_rgbrange(rgb,
-// 			game->cell))
-// 		error_configuration(game, tmp, fd);
-// 	free(tmp);
-// }
-
 void	init_game(char *filename, t_game *game)
 {
 	int		fd;
@@ -136,6 +115,13 @@ void	init_game(char *filename, t_game *game)
 	}
 	game->configs = 0;
 	tmp = get_texture(fd, game);
+	game->player = malloc(sizeof(t_point));
+	if (!game->player)
+	{
+		free(game);
+		error_message(5);
+	}
+	game->player->count = 0;
 	check_game(fd, game, tmp, filename);
 }
 
@@ -161,13 +147,13 @@ char	**init_array(int rows, int cols)
 	int		i;
 	int		j;
 
-	map = malloc(rows * sizeof(char *));
+	map = malloc((rows) * sizeof(char *));
 	if (!map)
 		error_message(5);
 	i = 0;
 	while (i < rows)
 	{
-		map[i] = malloc(cols + 1 * sizeof(char));
+		map[i] = malloc((cols + 2) * sizeof(char));
 		if (!map[i])
 		{
 			j = 0;
@@ -176,10 +162,11 @@ char	**init_array(int rows, int cols)
 			free(map);
 			error_message(5);
 		}
-		ft_memset(map[i], 'a', cols);
-		map[i][cols] = '\0';
+		ft_memset(map[i], 'a', cols + 1);
+		map[i][cols + 1] = '\0';
 		i++;
 	}
+	map[i] = NULL;
 	return (map);
 }
 int	valid_map_value(char c)
@@ -213,6 +200,7 @@ char	**init_map(int rows, int cols, char *filename)
 	int		height;
 
 	im.map = init_array(rows, cols);
+	im.tmp = NULL;
 	im.fd = open(filename, O_RDONLY);
 	if (im.fd == -1)
 		return (ft_freemap(&im, rows));
@@ -222,7 +210,9 @@ char	**init_map(int rows, int cols, char *filename)
 	{
 		im.tmp = tmpf(im.fd, im.tmp);
 		if (!im.tmp)
+		{
 			break ;
+		}
 		height++;
 	}
 	free(im.tmp);
