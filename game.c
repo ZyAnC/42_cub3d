@@ -6,7 +6,7 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 13:37:50 by yzheng            #+#    #+#             */
-/*   Updated: 2024/11/29 20:08:00 by yzheng           ###   ########.fr       */
+/*   Updated: 2024/11/29 20:25:34 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,10 +268,14 @@ void	game_loop(void *ml)
 	t_mlx	*mlx;
 
 	mlx = ml;
-	mlx_delete_image(mlx->mlx_c,mlx->img);
-	mlx->img = mlx_new_image(mlx->mlx_c, S_W, S_H);
+sleep(1);
+	mlx->c++;
+	mlx->ply->plyr_x = mlx->dt->player->x  * TILE_SIZE + TILE_SIZE / 2 + mlx->c;
+	mlx->ply->plyr_y = mlx->dt->player->y * TILE_SIZE + TILE_SIZE / 2 +mlx->c;
+	printf("%d   %d\n",mlx->ply->plyr_y,mlx->ply->plyr_x);
+	printf("%d  \n",mlx->c);
 	cast_rays(mlx);
-	mlx_image_to_window(mlx->mlx_c, mlx->img, 0, 0);
+
 
 
 }
@@ -327,6 +331,9 @@ void	init_mlx(t_game *game)
 	mlx.ray = ft_calloc(1, sizeof(t_ray));
 	mlx.mlx_c = mlx_init(S_W, S_H, "Cub3D", 0);
 	init_player(mlx);
+mlx.c = 0;
+	mlx.img = mlx_new_image(mlx.mlx_c, S_W, S_H);
+		mlx_image_to_window(mlx.mlx_c, mlx.img, 0, 0);
 	mlx_loop_hook(mlx.mlx_c, &game_loop, &mlx);
 		//game_loop(&mlx);
 	mlx_loop(mlx.mlx_c);

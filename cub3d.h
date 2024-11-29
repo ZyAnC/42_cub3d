@@ -80,6 +80,7 @@ typedef struct s_mlx	//the mlx structure
 	t_player		*ply;	// the player structure
 	t_rgb	*floor;
 	t_rgb	*cell;
+	int c;
 }	t_mlx;
 
 
