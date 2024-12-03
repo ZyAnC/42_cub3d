@@ -6,7 +6,7 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 18:29:19 by yzheng            #+#    #+#             */
-/*   Updated: 2024/11/29 18:20:53 by yzheng           ###   ########.fr       */
+/*   Updated: 2024/12/03 19:40:16 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,7 @@ int	check_rgbrange(char *str, t_rgb *rgb)
 	rgb->r = ft_atoi(token[0]);
 	rgb->g = ft_atoi(token[1]);
 	rgb->b = ft_atoi(token[2]);
-
 	pp_free(token);
-
 	return (1);
 }
 
@@ -86,43 +84,42 @@ void	free_all(t_game *game)
 	free(game);
 	exit(1);
 }
-int		check_invalidzero(char c,t_game *game ,int i, int j)
+int	check_invalidzero(char c, t_game *game, int i, int j)
 {
 	if (game->player->count > 1)
-		return(1);
+		return (1);
 	if (c == 'N' || c == 'W' || c == 'E' || c == 'S')
 	{
 		game->player->y = i;
 		game->player->x = j;
 		game->player->face = c;
 	}
-	return((c == '0' || c == 'N' || c == 'W' || c == 'E' || c == 'S') && (game->map[i-1][j] == 'a'
-		|| game->map[i+1][j] == 'a' || game->map[i][j-1] == 'a'
-			|| game->map[i][j+1] == 'a'));
-
+	return ((c == '0' || c == 'N' || c == 'W' || c == 'E' || c == 'S')
+		&& (game->map[i - 1][j] == 'a' || game->map[i + 1][j] == 'a'
+			|| game->map[i][j - 1] == 'a' || game->map[i][j + 1] == 'a'));
 }
 void	check_map(t_game *game)
 {
 	size_t	i;
 	size_t	j;
 	char	c;
-	i = 0;
 
-	while(game->map[i])
+	i = 0;
+	while (game->map[i])
 	{
 		j = 0;
-		while(game->map[i][j])
+		while (game->map[i][j])
 		{
-			c =  game->map[i][j];
+			c = game->map[i][j];
 			if (c == 'N' || c == 'W' || c == 'E' || c == 'S')
 				game->player->count++;
-			if((c == '0' || c == 'N' || c == 'W' || c == 'E' || c == 'S')
+			if ((c == '0' || c == 'N' || c == 'W' || c == 'E' || c == 'S')
 				&& (j == 0 || j == game->cols - 1))
 				free_all(game);
-			if((c == '0' || c == 'N' || c == 'W' || c == 'E' || c == 'S')
+			if ((c == '0' || c == 'N' || c == 'W' || c == 'E' || c == 'S')
 				&& (i == 0 || i == game->rows - 1))
 				free_all(game);
-			if(check_invalidzero(c,game,i,j))
+			if (check_invalidzero(c, game, i, j))
 				free_all(game);
 			j++;
 		}
@@ -130,10 +127,8 @@ void	check_map(t_game *game)
 	}
 }
 
-
 void	check_game(int fd, t_game *game, char *tmp, char *filename)
 {
-
 	game->rows = 1;
 	game->cols = ft_strlen(tmp);
 	while (tmp != NULL)
@@ -156,4 +151,5 @@ void	check_game(int fd, t_game *game, char *tmp, char *filename)
 	if (game->player->count == 0)
 		free_all(game);
 	init_mlx(game);
+	free_all(game);
 }

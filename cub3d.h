@@ -13,8 +13,8 @@
 # define S_H 1000 // screen height
 # define TILE_SIZE 20 // tile size
 # define FOV 60 // field of view
-# define ROTATION_SPEED 0.045 // rotation speed
-# define PLAYER_SPEED 4	// player speed
+# define ROTATION_SPEED 0.035 // rotation speed
+# define PLAYER_SPEED 2	// player speed
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif
@@ -80,7 +80,7 @@ typedef struct s_mlx	//the mlx structure
 	t_player		*ply;	// the player structure
 	t_rgb	*floor;
 	t_rgb	*cell;
-	int c;
+
 }	t_mlx;
 
 
@@ -93,19 +93,19 @@ typedef struct s_game
 	char	*wpath;
 	char	*epath;
 	int		configs;
-	t_tex			*tex;
 	t_point *player;
 	size_t		rows;
 	size_t		cols;
 	t_rgb	*floor;
 	t_rgb	*cell;
-	mlx_t			*mlx;
+
 }	t_game;
 typedef struct initmap
 {
 	char	**map;
 	int		i;
 	int		j;
+	int height;
 	int		fd;
 	char	*tmp;
 }	t_imap;

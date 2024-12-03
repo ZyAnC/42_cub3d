@@ -6,11 +6,12 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 13:37:50 by yzheng            #+#    #+#             */
-/*   Updated: 2024/11/29 20:25:34 by yzheng           ###   ########.fr       */
+/*   Updated: 2024/12/03 20:22:25 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
 int	reverse_bytes(int c)
 {
 	unsigned int	b;
@@ -30,63 +31,66 @@ double	nor_angle(double angle)
 		angle += 2 * M_PI;
 	return (angle);
 }
-int get_color(int r, int g, int b)
+int	get_color(int r, int g, int b)
 {
-	 int a = 0xFF;
- return (r << 24 | g << 16 | b << 8 | a );
-}
-void	my_mlx_pixel_put(t_mlx *mlx, int x, int y, int color)	// put the pixel
-{
+	int	a;
 
-	if (x < 0) // check the x position
+	a = 0xFF;
+	return (r << 24 | g << 16 | b << 8 | a);
+}
+void	my_mlx_pixel_put(t_mlx *mlx, int x, int y, int color)
+{
+	if (x < 0)
 		return ;
 	else if (x >= S_W)
 		return ;
-	if (y < 0) // check the y position
+	if (y < 0)
 		return ;
 	else if (y >= S_H)
 		return ;
-	mlx_put_pixel(mlx->img, x, y, color); // put the pixel
+	mlx_put_pixel(mlx->img, x, y, color);
 }
- mlx_texture_t	*get_wallpng(t_mlx *mlx, int flag)
+mlx_texture_t	*get_wallpng(t_mlx *mlx, int flag)
 {
-	mlx->ray->ray_ngl = nor_angle(mlx->ray->ray_ngl); // normalize the angle
+	mlx->ray->ray_ngl = nor_angle(mlx->ray->ray_ngl);
 	if (flag == 0)
 	{
 		if (mlx->ray->ray_ngl > M_PI / 2 && mlx->ray->ray_ngl < 3 * (M_PI / 2))
-			return (mlx->tex->ea); // west wall
+			return (mlx->tex->ea);
 		else
-			return (mlx->tex->we); // east wall
+			return (mlx->tex->we);
 	}
 	else
 	{
 		if (mlx->ray->ray_ngl > 0 && mlx->ray->ray_ngl < M_PI)
-			return (mlx->tex->so); // south wall
+			return (mlx->tex->so);
 		else
-			return (mlx->tex->no); // north wall
+			return (mlx->tex->no);
 	}
 }
-void	draw_floor_ceiling(t_mlx *mlx, int ray, int t_pix, int b_pix)	// draw the floor and the ceiling
+void	draw_floor_ceiling(t_mlx *mlx, int ray, int t_pix, int b_pix)
 {
-	int		i;
+	int	i;
 
 	i = b_pix;
 	while (i < S_H)
-		my_mlx_pixel_put(mlx, ray, i++, get_color(mlx->floor->r,mlx->floor->g,mlx->floor->b)); // floor
+		my_mlx_pixel_put(mlx, ray, i++, get_color(mlx->floor->r, mlx->floor->g,
+				mlx->floor->b));
 	i = 0;
 	while (i < t_pix)
-		my_mlx_pixel_put(mlx, ray, i++, get_color(mlx->cell->r,mlx->cell->g,mlx->cell->b)); // ceiling
+		my_mlx_pixel_put(mlx, ray, i++, get_color(mlx->cell->r, mlx->cell->g,
+				mlx->cell->b));
 }
-double	get_x_o(mlx_texture_t	*texture, t_mlx *mlx)
+double	get_x_o(mlx_texture_t *texture, t_mlx *mlx)
 {
 	double	x_o;
 
 	if (mlx->ray->flag == 1)
-		x_o = (int)fmodf((mlx->ray->horiz_x * \
-		(texture->width / TILE_SIZE)), texture->width);
+		x_o = (int)fmodf((mlx->ray->horiz_x * (texture->width / TILE_SIZE)),
+				texture->width);
 	else
-		x_o = (int)fmodf((mlx->ray->vert_y * \
-		(texture->width / TILE_SIZE)), texture->width);
+		x_o = (int)fmodf((mlx->ray->vert_y * (texture->width / TILE_SIZE)),
+				texture->width);
 	return (x_o);
 }
 void	draw_wall(t_mlx *mlx, int t_pix, int b_pix, double wall_h)
@@ -106,8 +110,8 @@ void	draw_wall(t_mlx *mlx, int t_pix, int b_pix, double wall_h)
 		y_o = 0;
 	while (t_pix < b_pix)
 	{
-		my_mlx_pixel_put(mlx, mlx->ray->index, t_pix, reverse_bytes \
-		(arr[(int)y_o * texture->width + (int)x_o]));
+		my_mlx_pixel_put(mlx, mlx->ray->index, t_pix, reverse_bytes(arr[(int)y_o
+				* texture->width + (int)x_o]));
 		y_o += factor;
 		t_pix++;
 	}
@@ -120,7 +124,8 @@ void	render_wall(t_mlx *mlx, int ray)
 	double	t_pix;
 
 	mlx->ray->distance *= cos(nor_angle(mlx->ray->ray_ngl - mlx->ply->angle));
-	wall_h = (TILE_SIZE / mlx->ray->distance) * ((S_W / 2) /tan(mlx->ply->fov_rd / 2));
+	wall_h = (TILE_SIZE / mlx->ray->distance) * ((S_W / 2)
+			/ tan(mlx->ply->fov_rd / 2));
 	b_pix = (S_H / 2) + (wall_h / 2);
 	t_pix = (S_H / 2) - (wall_h / 2);
 	if (b_pix > S_H)
@@ -170,13 +175,13 @@ int	unit_circle(float angle, char c)
 }
 int	wall_hit(float x, float y, t_mlx *mlx)
 {
-	int		x_m;
-	int		y_m;
+	int	x_m;
+	int	y_m;
 
 	if (x < 0 || y < 0)
 		return (0);
-	x_m = floor (x / TILE_SIZE);
-	y_m = floor (y / TILE_SIZE);
+	x_m = floor(x / TILE_SIZE);
+	y_m = floor(y / TILE_SIZE);
 	if ((y_m >= mlx->dt->h_map || x_m >= mlx->dt->w_map))
 		return (0);
 	if (mlx->dt->map2d[y_m] && x_m <= (int)ft_strlen(mlx->dt->map2d[y_m]))
@@ -197,8 +202,8 @@ float	get_h_inter(t_mlx *mlx, float angl)
 	h_y = floor(mlx->ply->plyr_y / TILE_SIZE) * TILE_SIZE;
 	pixel = inter_check(angl, &h_y, &y_step, 1);
 	h_x = mlx->ply->plyr_x + (h_y - mlx->ply->plyr_y) / tan(angl);
-	if ((unit_circle(angl, 'y') && x_step > 0) || \
-		(!unit_circle(angl, 'y') && x_step < 0))
+	if ((unit_circle(angl, 'y') && x_step > 0) || (!unit_circle(angl, 'y')
+			&& x_step < 0))
 		x_step *= -1;
 	while (wall_hit(h_x, h_y - pixel, mlx))
 	{
@@ -207,8 +212,8 @@ float	get_h_inter(t_mlx *mlx, float angl)
 	}
 	mlx->ray->horiz_x = h_x;
 	mlx->ray->horiz_y = h_y;
-	return (sqrt(pow(h_x - mlx->ply->plyr_x, 2) + \
-	pow(h_y - mlx->ply->plyr_y, 2)));
+	return (sqrt(pow(h_x - mlx->ply->plyr_x, 2) + pow(h_y - mlx->ply->plyr_y,
+				2)));
 }
 
 float	get_v_inter(t_mlx *mlx, float angl)
@@ -224,8 +229,8 @@ float	get_v_inter(t_mlx *mlx, float angl)
 	v_x = floor(mlx->ply->plyr_x / TILE_SIZE) * TILE_SIZE;
 	pixel = inter_check(angl, &v_x, &x_step, 0);
 	v_y = mlx->ply->plyr_y + (v_x - mlx->ply->plyr_x) * tan(angl);
-	if ((unit_circle(angl, 'x') && y_step < 0) || \
-	(!unit_circle(angl, 'x') && y_step > 0))
+	if ((unit_circle(angl, 'x') && y_step < 0) || (!unit_circle(angl, 'x')
+			&& y_step > 0))
 		y_step *= -1;
 	while (wall_hit(v_x - pixel, v_y, mlx))
 	{
@@ -234,8 +239,8 @@ float	get_v_inter(t_mlx *mlx, float angl)
 	}
 	mlx->ray->vert_x = v_x;
 	mlx->ray->vert_y = v_y;
-	return (sqrt(pow(v_x - mlx->ply->plyr_x, 2) + \
-	pow(v_y - mlx->ply->plyr_y, 2)));
+	return (sqrt(pow(v_x - mlx->ply->plyr_x, 2) + pow(v_y - mlx->ply->plyr_y,
+				2)));
 }
 void	cast_rays(t_mlx *mlx)
 {
@@ -262,64 +267,202 @@ void	cast_rays(t_mlx *mlx)
 		mlx->ray->ray_ngl += (mlx->ply->fov_rd / S_W);
 	}
 }
+void	move_player(t_mlx *mlx, double move_x, double move_y)
+{
+	int	map_grid_y;
+	int	map_grid_x;
+	int	new_x;
+	int	new_y;
+
+	new_x = roundf(mlx->ply->plyr_x + move_x);
+	new_y = roundf(mlx->ply->plyr_y + move_y);
+	map_grid_x = (new_x / TILE_SIZE);
+	map_grid_y = (new_y / TILE_SIZE);
+	if (mlx->dt->map2d[map_grid_y][map_grid_x] != '1'
+		&& (mlx->dt->map2d[map_grid_y][mlx->ply->plyr_x / TILE_SIZE] != '1'
+			&& mlx->dt->map2d[mlx->ply->plyr_y / TILE_SIZE][map_grid_x] != '1'))
+	{
+		mlx->ply->plyr_x = new_x;
+		mlx->ply->plyr_y = new_y;
+	}
+}
+void	rotate_player(t_mlx *mlx, int i)
+{
+	if (i == 1)
+	{
+		mlx->ply->angle += ROTATION_SPEED;
+		if (mlx->ply->angle > 2 * M_PI)
+			mlx->ply->angle -= 2 * M_PI;
+	}
+	else
+	{
+		mlx->ply->angle -= ROTATION_SPEED;
+		if (mlx->ply->angle < 0)
+			mlx->ply->angle += 2 * M_PI;
+	}
+}
+void	hook(t_mlx *mlx, double move_x, double move_y)
+{
+	if (mlx->ply->l_r == 1)
+	{
+		move_x = -sin(mlx->ply->angle) * PLAYER_SPEED;
+		move_y = cos(mlx->ply->angle) * PLAYER_SPEED;
+	}
+	if (mlx->ply->l_r == -1)
+	{
+		move_x = sin(mlx->ply->angle) * PLAYER_SPEED;
+		move_y = -cos(mlx->ply->angle) * PLAYER_SPEED;
+	}
+	if (mlx->ply->u_d == 1)
+	{
+		move_x = cos(mlx->ply->angle) * PLAYER_SPEED;
+		move_y = sin(mlx->ply->angle) * PLAYER_SPEED;
+	}
+	if (mlx->ply->u_d == -1)
+	{
+		move_x = -cos(mlx->ply->angle) * PLAYER_SPEED;
+		move_y = -sin(mlx->ply->angle) * PLAYER_SPEED;
+	}
+	move_player(mlx, move_x, move_y); // move the player
+}
 
 void	game_loop(void *ml)
 {
 	t_mlx	*mlx;
 
 	mlx = ml;
-sleep(1);
-	mlx->c++;
-	mlx->ply->plyr_x = mlx->dt->player->x  * TILE_SIZE + TILE_SIZE / 2 + mlx->c;
-	mlx->ply->plyr_y = mlx->dt->player->y * TILE_SIZE + TILE_SIZE / 2 +mlx->c;
-	printf("%d   %d\n",mlx->ply->plyr_y,mlx->ply->plyr_x);
-	printf("%d  \n",mlx->c);
+	if (mlx->ply->rot == 1)
+		rotate_player(mlx, 1);
+	if (mlx->ply->rot == -1)
+		rotate_player(mlx, 0);
+	hook(mlx, 0, 0);
 	cast_rays(mlx);
-
-
-
 }
 void	init_player(t_mlx mlx)
 {
 	mlx.ply->plyr_x = mlx.dt->player->x * TILE_SIZE + TILE_SIZE / 2;
 	mlx.ply->plyr_y = mlx.dt->player->y * TILE_SIZE + TILE_SIZE / 2;
 	mlx.ply->fov_rd = FOV * M_PI / 180;
-	if(mlx.dt->player->face == 'E')
-		mlx.ply->angle = 0 ;
-	else if(mlx.dt->player->face == 'S')
-		mlx.ply->angle = M_PI /2;
-	else if(mlx.dt->player->face == 'W')
+	if (mlx.dt->player->face == 'E')
+		mlx.ply->angle = 0;
+	else if (mlx.dt->player->face == 'S')
+		mlx.ply->angle = M_PI / 2;
+	else if (mlx.dt->player->face == 'W')
 		mlx.ply->angle = M_PI;
-	else if(mlx.dt->player->face == 'N')
+	else if (mlx.dt->player->face == 'N')
 		mlx.ply->angle = 3 * M_PI / 2;
 }
 int	check_img(t_game *game)
 {
-	if(!mlx_load_png(game->npath))
+	mlx_texture_t	*check;
+
+	check = mlx_load_png(game->npath);
+	if (!check)
 		return (0);
-	if(!mlx_load_png(game->wpath))
+	mlx_delete_texture(check);
+	check = mlx_load_png(game->wpath);
+	if (!check)
 		return (0);
-	if(!mlx_load_png(game->spath))
+	mlx_delete_texture(check);
+	check = mlx_load_png(game->spath);
+	if (!check)
 		return (0);
-	if(!mlx_load_png(game->epath))
+	mlx_delete_texture(check);
+	check = mlx_load_png(game->epath);
+	if (!check)
 		return (0);
+	mlx_delete_texture(check);
 	return (1);
+}
+void	ft_reles(mlx_key_data_t keydata, t_mlx *mlx)
+{
+	if (keydata.key == MLX_KEY_D && (keydata.action == MLX_RELEASE))
+		mlx->ply->l_r = 0;
+	else if (keydata.key == MLX_KEY_A && (keydata.action == MLX_RELEASE))
+		mlx->ply->l_r = 0;
+	else if (keydata.key == MLX_KEY_S && (keydata.action == MLX_RELEASE))
+		mlx->ply->u_d = 0;
+	else if (keydata.key == MLX_KEY_W && (keydata.action == MLX_RELEASE))
+		mlx->ply->u_d = 0;
+	else if (keydata.key == MLX_KEY_LEFT && keydata.action == MLX_RELEASE)
+		mlx->ply->rot = 0;
+	else if (keydata.key == MLX_KEY_RIGHT && keydata.action == MLX_RELEASE)
+		mlx->ply->rot = 0;
+}
+void	ft_exit(t_mlx *mlx)
+{
+	int	i;
+
+	i = 0;
+	mlx_delete_image(mlx->mlx_c, mlx->img);
+	mlx_close_window(mlx->mlx_c);
+	while (mlx->dt->map2d[i])
+		free(mlx->dt->map2d[i++]);
+	if (mlx->tex->no)
+		mlx_delete_texture(mlx->tex->no);
+	if (mlx->tex->so)
+		mlx_delete_texture(mlx->tex->so);
+	if (mlx->tex->we)
+		mlx_delete_texture(mlx->tex->we);
+	if (mlx->tex->ea)
+		mlx_delete_texture(mlx->tex->ea);
+	free(mlx->dt->map2d);
+	free(mlx->dt->player);
+	free(mlx->dt);
+	free(mlx->ply);
+	free(mlx->ray);
+	free(mlx->tex);
+	mlx_terminate(mlx->mlx_c);
+	exit(0);
+}
+void	key_hook(mlx_key_data_t keydata, void *ml)
+{
+	t_mlx	*mlx;
+
+	mlx = ml;
+	if (keydata.key == MLX_KEY_ESCAPE && (keydata.action == MLX_PRESS
+			|| keydata.action == MLX_REPEAT))
+		ft_exit(mlx);
+	else if (keydata.key == MLX_KEY_A && (keydata.action == MLX_PRESS))
+		mlx->ply->l_r = -1;
+	else if (keydata.key == MLX_KEY_D && (keydata.action == MLX_PRESS))
+		mlx->ply->l_r = 1;
+	else if (keydata.key == MLX_KEY_S && (keydata.action == MLX_PRESS))
+		mlx->ply->u_d = -1;
+	else if (keydata.key == MLX_KEY_W && keydata.action == MLX_PRESS)
+		mlx->ply->u_d = 1;
+	else if (keydata.key == MLX_KEY_LEFT && keydata.action == MLX_PRESS)
+		mlx->ply->rot = -1;
+	else if (keydata.key == MLX_KEY_RIGHT && keydata.action == MLX_PRESS)
+		mlx->ply->rot = 1;
+	ft_reles(keydata, mlx);
+}
+void	load_tex(t_mlx *mlx, t_game *game)
+{
+	mlx->tex = (t_tex *)ft_calloc(sizeof(t_tex), 1);
+	if (!check_img(game))
+	{
+		free(mlx->tex);
+		free_all(game);
+	}
+	mlx->tex->no = mlx_load_png(game->npath);
+	mlx->tex->we = mlx_load_png(game->wpath);
+	mlx->tex->so = mlx_load_png(game->spath);
+	mlx->tex->ea = mlx_load_png(game->epath);
+	if (game->npath)
+		free(game->npath);
+	if (game->spath)
+		free(game->spath);
+	if (game->wpath)
+		free(game->wpath);
+	if (game->epath)
+		free(game->epath);
 }
 void	init_mlx(t_game *game)
 {
 	t_mlx	mlx;
 
-	mlx.tex = (t_tex *)ft_calloc(sizeof(t_tex), 1);
-	if(!check_img(game))
-	{
-		free(mlx.tex);
-		free_all(game);
-	}
-	mlx.tex->no = mlx_load_png(game->npath);
-	mlx.tex->we = mlx_load_png(game->wpath);
-	mlx.tex->so = mlx_load_png(game->spath);
-	mlx.tex->ea = mlx_load_png(game->epath);
-
+	load_tex(&mlx, game);
 	mlx.dt = calloc(1, sizeof(t_data));
 	mlx.dt->map2d = game->map;
 	mlx.dt->h_map = game->rows;
@@ -331,10 +474,10 @@ void	init_mlx(t_game *game)
 	mlx.ray = ft_calloc(1, sizeof(t_ray));
 	mlx.mlx_c = mlx_init(S_W, S_H, "Cub3D", 0);
 	init_player(mlx);
-mlx.c = 0;
 	mlx.img = mlx_new_image(mlx.mlx_c, S_W, S_H);
-		mlx_image_to_window(mlx.mlx_c, mlx.img, 0, 0);
+	mlx_image_to_window(mlx.mlx_c, mlx.img, 0, 0);
 	mlx_loop_hook(mlx.mlx_c, &game_loop, &mlx);
-		//game_loop(&mlx);
+	mlx_key_hook(mlx.mlx_c, &key_hook, &mlx);
 	mlx_loop(mlx.mlx_c);
+	ft_exit(&mlx);
 }

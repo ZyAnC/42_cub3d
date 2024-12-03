@@ -29,10 +29,8 @@ char	*tmpf(int fd, char *tmp)
 
 int	get_texture_rgb(char *tmp)
 {
-
 	if (tmp && !ft_strlen(tmp))
 		return (1);
-
 	if (!ft_strncmp(tmp, "NO ./", 5))
 		return (2);
 	if (!ft_strncmp(tmp, "SO ./", 5))
@@ -49,10 +47,23 @@ int	get_texture_rgb(char *tmp)
 		return (8);
 	return (0);
 }
+void	parse_rgb(int type, char *tmp, t_game *game, int fd)
+{
+	if (type == 6)
+	{
+		if (!check_rgb(tmp) || !check_rgbrange(ft_strdup(tmp + 2), game->floor))
+			error_configuration(game, tmp, fd);
+	}
+	if (type == 7)
+	{
+		if (!check_rgb(tmp) || !check_rgbrange(ft_strdup(tmp + 2), game->cell))
+			error_configuration(game, tmp, fd);
+	}
+}
 int	set_config(t_game *game, char *tmp, int type, int fd)
 {
-	if(type == 3 || type == 4 || type == 5 || type == 2)
-		if(!ft_strnstr(tmp, ".png", ft_strlen(tmp)))
+	if (type == 3 || type == 4 || type == 5 || type == 2)
+		if (!ft_strnstr(tmp, ".png", ft_strlen(tmp)))
 			return (0);
 	if (type == 1)
 		return (type);
@@ -64,16 +75,8 @@ int	set_config(t_game *game, char *tmp, int type, int fd)
 		game->wpath = ft_strdup(tmp + 3);
 	else if (type == 5)
 		game->epath = ft_strdup(tmp + 3);
-	else if (type == 6)
-	{
-		if (!check_rgb(tmp) || !check_rgbrange(ft_strdup(tmp + 2), game->floor))
-			error_configuration(game, tmp, fd);
-	}
-	else if (type == 7)
-	{
-		if (!check_rgb(tmp) || !check_rgbrange(ft_strdup(tmp + 2), game->cell))
-			error_configuration(game, tmp, fd);
-	}
+	else if (type == 6 || type == 7)
+		parse_rgb(type, tmp, game, fd);
 	if (type == 8 && game->configs != 6)
 		return (0);
 	else if (type == 8 && game->configs == 6)
@@ -147,7 +150,7 @@ char	**init_array(int rows, int cols)
 	int		i;
 	int		j;
 
-	map = malloc((rows) * sizeof(char *));
+	map = malloc((rows + 1) * sizeof(char *));
 	if (!map)
 		error_message(5);
 	i = 0;
@@ -194,44 +197,47 @@ int	init_map_utils(t_imap *im)
 	}
 	return (1);
 }
+int	reach_map_start(t_imap *im, char *filename, int rows)
+{
+	im->tmp = get_next_line(im->fd, 0);
+	free(im->tmp);
+	close(im->fd);
+	im->i = im->height - rows + 1;
+	im->tmp = NULL;
+	im->fd = open(filename, O_RDONLY);
+	if (im->fd == -1)
+		return (0);
+	while (im->i)
+	{
+		im->tmp = tmpf(im->fd, im->tmp);
+		im->i--;
+	}
+	if (!init_map_utils(im))
+		return (0);
+	free(im->tmp);
+	return (1);
+}
 char	**init_map(int rows, int cols, char *filename)
 {
 	t_imap	im;
-	int		height;
 
 	im.map = init_array(rows, cols);
 	im.tmp = NULL;
 	im.fd = open(filename, O_RDONLY);
 	if (im.fd == -1)
 		return (ft_freemap(&im, rows));
-	height = 0;
+	im.height = 0;
 	im.tmp = tmpf(im.fd, im.tmp);
 	while (im.tmp != NULL)
 	{
 		im.tmp = tmpf(im.fd, im.tmp);
 		if (!im.tmp)
-		{
 			break ;
-		}
-		height++;
+		im.height++;
 	}
 	free(im.tmp);
-	im.tmp = get_next_line(im.fd, 0);
-	free(im.tmp);
-	close(im.fd);
-	im.i = height - rows + 1;
-	im.tmp = NULL;
-	im.fd = open(filename, O_RDONLY);
-	if (im.fd == -1)
+	if (!reach_map_start(&im, filename, rows))
 		return (ft_freemap(&im, rows));
-	while (im.i)
-	{
-		im.tmp = tmpf(im.fd, im.tmp);
-		im.i--;
-	}
-	if (!init_map_utils(&im))
-		return (ft_freemap(&im, rows));
-	free(im.tmp);
 	im.tmp = get_next_line(im.fd, 0);
 	free(im.tmp);
 	close(im.fd);

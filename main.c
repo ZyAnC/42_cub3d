@@ -6,7 +6,7 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 10:13:28 by yzheng            #+#    #+#             */
-/*   Updated: 2024/11/26 10:39:19 by yzheng           ###   ########.fr       */
+/*   Updated: 2024/12/03 19:55:12 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,33 +31,35 @@ void	error_message(int i)
 	exit(1);
 }
 
+void	init_game_data(char *filename)
+{
+	t_game	*game;
 
+	game = malloc(sizeof(t_game));
+	if (!game)
+		error_message(5);
+	game->npath = NULL;
+	game->spath = NULL;
+	game->wpath = NULL;
+	game->epath = NULL;
+	game->floor = (t_rgb *)malloc(sizeof(t_rgb));
+	if (!game->floor)
+		error_message(5);
+	game->cell = (t_rgb *)malloc(sizeof(t_rgb));
+	if (!game->cell)
+		error_message(5);
+	init_game(filename, game);
+}
 
 void	checkgamename(char *filename)
 {
 	char	*result;
-	t_game	*game;
 
 	result = ft_strnstr(filename, ".cub", ft_strlen(filename));
 	if (result != NULL)
 	{
 		if ((result + 3) == (filename + ft_strlen(filename) - 1))
-		{
-			game = malloc(sizeof(t_game));
-			if (!game)
-				error_message(5);
-			game->npath = NULL;
-			game->spath = NULL;
-			game->wpath = NULL;
-			game->epath = NULL;
-			game->floor = (t_rgb *)malloc(sizeof(t_rgb));
-			if (!game->floor)
-				error_message(5);
-			game->cell = (t_rgb *)malloc(sizeof(t_rgb));
-			if (!game->cell)
-				error_message(5);
-			init_game(filename,game);
-		}
+			init_game_data(filename);
 	}
 	else
 		error_message(3);
