@@ -115,6 +115,7 @@ void	error_message(int i);
 void	error_configuration(t_game *game, char *tmp, int fd);
 void	pp_free(char **fly);
 char	*tmpf(int fd, char *tmp);
+char	*get_texture(int fd, t_game *game);
 int	check_rgb(const char *str);
 int	check_rgbrange(char *str, t_rgb *rgb);
 void	check_game(int fd,t_game *game,char *tmp,char *filename);

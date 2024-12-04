@@ -104,29 +104,6 @@ char	*get_texture(int fd, t_game *game)
 	return (tmp);
 }
 
-void	init_game(char *filename, t_game *game)
-{
-	int		fd;
-	char	*tmp;
-
-	tmp = NULL;
-	fd = open(filename, O_RDONLY);
-	if (fd == -1)
-	{
-		free(game);
-		error_message(4);
-	}
-	game->configs = 0;
-	tmp = get_texture(fd, game);
-	game->player = malloc(sizeof(t_point));
-	if (!game->player)
-	{
-		free(game);
-		error_message(5);
-	}
-	game->player->count = 0;
-	check_game(fd, game, tmp, filename);
-}
 
 char	**ft_freemap(t_imap *im, int rows)
 {

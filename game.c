@@ -6,7 +6,7 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 13:37:50 by yzheng            #+#    #+#             */
-/*   Updated: 2024/12/03 20:22:25 by yzheng           ###   ########.fr       */
+/*   Updated: 2024/12/04 13:17:41 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,23 +267,31 @@ void	cast_rays(t_mlx *mlx)
 		mlx->ray->ray_ngl += (mlx->ply->fov_rd / S_W);
 	}
 }
+
 void	move_player(t_mlx *mlx, double move_x, double move_y)
 {
 	int	map_grid_y;
 	int	map_grid_x;
 	int	new_x;
 	int	new_y;
+	int	buffer = 5; // 缓冲区像素
 
 	new_x = roundf(mlx->ply->plyr_x + move_x);
 	new_y = roundf(mlx->ply->plyr_y + move_y);
 	map_grid_x = (new_x / TILE_SIZE);
 	map_grid_y = (new_y / TILE_SIZE);
-	if (mlx->dt->map2d[map_grid_y][map_grid_x] != '1'
-		&& (mlx->dt->map2d[map_grid_y][mlx->ply->plyr_x / TILE_SIZE] != '1'
-			&& mlx->dt->map2d[mlx->ply->plyr_y / TILE_SIZE][map_grid_x] != '1'))
-	{
-		mlx->ply->plyr_x = new_x;
-		mlx->ply->plyr_y = new_y;
+
+	// 检查玩家是否即将进入墙壁
+	if (mlx->dt->map2d[map_grid_y][map_grid_x] != '1') {
+		// 检查 x 方向缓冲区
+		if (mlx->dt->map2d[map_grid_y][(int)(new_x + buffer) / TILE_SIZE] != '1' &&
+		    mlx->dt->map2d[map_grid_y][(int)(new_x - buffer) / TILE_SIZE] != '1' &&
+		    // 检查 y 方向缓冲区
+		    mlx->dt->map2d[(int)(new_y + buffer) / TILE_SIZE][map_grid_x] != '1' &&
+		    mlx->dt->map2d[(int)(new_y - buffer) / TILE_SIZE][map_grid_x] != '1') {
+			mlx->ply->plyr_x = new_x;
+			mlx->ply->plyr_y = new_y;
+		}
 	}
 }
 void	rotate_player(t_mlx *mlx, int i)
