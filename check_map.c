@@ -67,9 +67,11 @@ void	free_all(t_game *game)
 	i = 0;
 	ft_printf("Error\nMisconfiguration!");
 	free(game->player);
+	if(game->map){
 	while (i < game->rows)
 		free(game->map[i++]);
 	free(game->map);
+		}
 	game->map = NULL;
 	if (game->npath)
 		free(game->npath);
