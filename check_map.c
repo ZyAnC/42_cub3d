@@ -6,7 +6,7 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 18:29:19 by yzheng            #+#    #+#             */
-/*   Updated: 2024/12/03 19:40:16 by yzheng           ###   ########.fr       */
+/*   Updated: 2025/02/13 15:27:43 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,11 @@ void	free_all(t_game *game)
 	i = 0;
 	ft_printf("Error\nMisconfiguration!");
 	free(game->player);
+	if(game->map){
 	while (i < game->rows)
 		free(game->map[i++]);
 	free(game->map);
+		}
 	game->map = NULL;
 	if (game->npath)
 		free(game->npath);
@@ -120,7 +122,11 @@ void	check_map(t_game *game)
 				&& (i == 0 || i == game->rows - 1))
 				free_all(game);
 			if (check_invalidzero(c, game, i, j))
+			{
+
 				free_all(game);
+
+			}
 			j++;
 		}
 		i++;

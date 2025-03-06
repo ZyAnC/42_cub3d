@@ -6,7 +6,7 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 13:37:50 by yzheng            #+#    #+#             */
-/*   Updated: 2024/12/04 13:17:41 by yzheng           ###   ########.fr       */
+/*   Updated: 2025/02/13 15:27:30 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ void	draw_wall(t_mlx *mlx, int t_pix, int b_pix, double wall_h)
 	arr = (uint32_t *)texture->pixels;
 	factor = (double)texture->height / wall_h;
 	x_o = get_x_o(texture, mlx);
-	y_o = (t_pix - (S_H / 2) + (wall_h / 2)) * factor;
+	y_o = 0;
 	if (y_o < 0)
 		y_o = 0;
 	while (t_pix < b_pix)
@@ -274,19 +274,16 @@ void	move_player(t_mlx *mlx, double move_x, double move_y)
 	int	map_grid_x;
 	int	new_x;
 	int	new_y;
-	int	buffer = 5; // 缓冲区像素
+	int	buffer = 5;
 
 	new_x = roundf(mlx->ply->plyr_x + move_x);
 	new_y = roundf(mlx->ply->plyr_y + move_y);
 	map_grid_x = (new_x / TILE_SIZE);
 	map_grid_y = (new_y / TILE_SIZE);
 
-	// 检查玩家是否即将进入墙壁
 	if (mlx->dt->map2d[map_grid_y][map_grid_x] != '1') {
-		// 检查 x 方向缓冲区
 		if (mlx->dt->map2d[map_grid_y][(int)(new_x + buffer) / TILE_SIZE] != '1' &&
 		    mlx->dt->map2d[map_grid_y][(int)(new_x - buffer) / TILE_SIZE] != '1' &&
-		    // 检查 y 方向缓冲区
 		    mlx->dt->map2d[(int)(new_y + buffer) / TILE_SIZE][map_grid_x] != '1' &&
 		    mlx->dt->map2d[(int)(new_y - buffer) / TILE_SIZE][map_grid_x] != '1') {
 			mlx->ply->plyr_x = new_x;
