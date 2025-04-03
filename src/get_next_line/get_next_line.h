@@ -6,7 +6,7 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 12:20:46 by yzheng            #+#    #+#             */
-/*   Updated: 2024/11/25 13:00:09 by yzheng           ###   ########.fr       */
+/*   Updated: 2025/04/03 21:19:10 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <stdlib.h>
 # include <limits.h>
 
-char	*get_next_line(int fd,int	i);
+char	*get_next_line(int fd, int i);
 char	*getnewline(char *storage);
 char	*fft_strjoin(char *s1, char *s2);
 char	*fft_strchr( char *s, int c);

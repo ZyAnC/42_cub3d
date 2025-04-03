@@ -6,7 +6,7 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 18:29:19 by yzheng            #+#    #+#             */
-/*   Updated: 2025/02/13 15:27:43 by yzheng           ###   ########.fr       */
+/*   Updated: 2025/04/03 21:31:54 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	check_rgb(const char *str)
 		return (0);
 	return (1);
 }
+
 int	check_rgbrange(char *str, t_rgb *rgb)
 {
 	char	**token;
@@ -67,11 +68,12 @@ void	free_all(t_game *game)
 	i = 0;
 	ft_printf("Error\nMisconfiguration!");
 	free(game->player);
-	if(game->map){
-	while (i < game->rows)
-		free(game->map[i++]);
-	free(game->map);
-		}
+	if (game->map)
+	{
+		while (i < game->rows)
+			free(game->map[i++]);
+		free(game->map);
+	}
 	game->map = NULL;
 	if (game->npath)
 		free(game->npath);
@@ -86,20 +88,7 @@ void	free_all(t_game *game)
 	free(game);
 	exit(1);
 }
-int	check_invalidzero(char c, t_game *game, int i, int j)
-{
-	if (game->player->count > 1)
-		return (1);
-	if (c == 'N' || c == 'W' || c == 'E' || c == 'S')
-	{
-		game->player->y = i;
-		game->player->x = j;
-		game->player->face = c;
-	}
-	return ((c == '0' || c == 'N' || c == 'W' || c == 'E' || c == 'S')
-		&& (game->map[i - 1][j] == 'a' || game->map[i + 1][j] == 'a'
-			|| game->map[i][j - 1] == 'a' || game->map[i][j + 1] == 'a'));
-}
+
 void	check_map(t_game *game)
 {
 	size_t	i;
@@ -122,11 +111,7 @@ void	check_map(t_game *game)
 				&& (i == 0 || i == game->rows - 1))
 				free_all(game);
 			if (check_invalidzero(c, game, i, j))
-			{
-
 				free_all(game);
-
-			}
 			j++;
 		}
 		i++;

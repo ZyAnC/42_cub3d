@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/14 10:13:28 by yzheng            #+#    #+#             */
-/*   Updated: 2024/12/04 13:28:41 by yzheng           ###   ########.fr       */
+/*   Created: 2025/04/03 21:22:22 by yzheng            #+#    #+#             */
+/*   Updated: 2025/04/03 21:24:25 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,6 @@ void	error_message(int i)
 
 void	init_game_data(t_game *game)
 {
-
-
-
 	if (!game)
 		error_message(5);
 	game->npath = NULL;
@@ -48,10 +45,9 @@ void	init_game_data(t_game *game)
 	game->cell = (t_rgb *)malloc(sizeof(t_rgb));
 	if (!game->cell)
 		error_message(5);
-
 }
 
-void	init_game(char *filename,t_game *game)
+void	init_game(char *filename, t_game *game)
 {
 	int		fd;
 	char	*tmp;
@@ -75,16 +71,19 @@ void	init_game(char *filename,t_game *game)
 	game->player->count = 0;
 	check_game(fd, game, tmp, filename);
 }
+
 void	checkgamename(char *filename)
 {
 	char	*result;
-	t_game *game;
+	t_game	*game;
+
 	result = ft_strnstr(filename, ".cub", ft_strlen(filename));
 	if (result != NULL)
 	{
 		if ((result + 3) == (filename + ft_strlen(filename) - 1))
-		{	game = malloc(sizeof(t_game));
-				init_game(filename,game);
+		{
+			game = malloc(sizeof(t_game));
+			init_game(filename, game);
 		}
 	}
 	else

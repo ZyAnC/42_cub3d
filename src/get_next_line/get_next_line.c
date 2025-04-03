@@ -6,7 +6,7 @@
 /*   By: yzheng <yzheng@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 12:20:17 by yzheng            #+#    #+#             */
-/*   Updated: 2024/11/25 18:27:30 by yzheng           ###   ########.fr       */
+/*   Updated: 2025/04/03 21:19:04 by yzheng           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,12 @@ static char	*getbuffer(int fd,	char *line)
 	return (line);
 }
 
-char	*get_next_line(int fd,int	i)
+char	*get_next_line(int fd, int i)
 {
 	char		*line;
 	static char	*bufferline;
 
-	if(!i)
+	if (!i)
 	{
 		ft_free(&bufferline);
 		return (NULL);

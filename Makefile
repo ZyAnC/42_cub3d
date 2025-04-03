@@ -11,7 +11,7 @@ HEADERS = -I $(LIBMLX)/include/MLX42
 LIBS := $(LIBMLX)/build/libmlx42.a -ldl -lglfw -pthread -lm \
 	$(LIBFT)/libft.a $(PRINTF)/libftprintf.a $(GETNEXTLINE)/get_next_line.a
 
-SRCS := main.c init_map.c check_map.c tools.c game.c\
+SRCS := main.c init_map.c check_map.c tools.c game.c map_tools.c math_tools.c render.c render_tools.c game_action.c\
 	$(shell find ./src -iname "*.c")
 # SRCSB := ./bonus/so_long_bonus.c ./bonus/parsingmap_bonus.c ./bonus/parsingmap_utils_bonus.c ./bonus/posehook_bonus.c  ./bonus/spirit_hook_bonus.c\
 # 	./bonus/hook_utils_bonus.c ./bonus/key_hook_bonus.c ./bonus/map_algorithm_bonus.c ./bonus/initgame_bonus.c ./bonus/initgame_util_bonus.c ./bonus/delete_bonus.c ./bonus/hook_bonus.c \
